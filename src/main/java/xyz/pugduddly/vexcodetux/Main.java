@@ -124,7 +124,7 @@ public class Main extends JFrame implements ActionListener {
         menuBar.add(projectMenu);
 
         JMenu helpMenu = new JMenu("Help");
-        helpMenu.setMnemonic(KeyEvent.VK_P);
+        helpMenu.setMnemonic(KeyEvent.VK_H);
         JMenuItem aboutMenuItem = new JMenuItem("About", KeyEvent.VK_A);
         aboutMenuItem.addActionListener(this);
         helpMenu.add(aboutMenuItem);
@@ -381,7 +381,7 @@ public class Main extends JFrame implements ActionListener {
                 ee.printStackTrace();
             }
         }
-        
+
         new Main();
     }
 }
