@@ -253,7 +253,7 @@ public class Project {
             Utils.exportResource("/upload.py", Utils.getStorageDirectory().toString());
             String storageDir = Utils.getStorageDirectory().toString();
             String projDir = this.getFile().getParentFile().toString();
-            String cmd = "python " + storageDir + "/upload.py \"" + projDir + "/build/" + this.getName() + ".bin\" \"" + this.getName() + "\" \"" + this.getDescription() + "\" " + this.getSlot() + " " + this.getIcon();
+            String cmd = "python3 \"" + storageDir + "/upload.py\" \"" + projDir + "/build/" + this.getName() + ".bin\" \"" + this.getName() + "\" \"" + this.getDescription() + "\" " + this.getSlot() + " " + this.getIcon();
             return buildCmd(cmd, "upload");
         } catch (Exception e) {
             e.printStackTrace();
