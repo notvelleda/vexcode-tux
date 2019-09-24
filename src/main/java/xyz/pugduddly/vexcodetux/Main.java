@@ -73,20 +73,6 @@ public class Main extends JFrame implements ActionListener {
     private Project project;
     
     public Main() {
-        System.setProperty("awt.useSystemAAFontSettings", "on");
-        System.setProperty("swing.aatext", "true");
-
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception ee) {
-                ee.printStackTrace();
-            }
-        }
-
         JPanel content = new JPanel();
         content.setBounds(0, 0, width, height);
         content.setPreferredSize(new Dimension(width, height));
@@ -382,6 +368,20 @@ public class Main extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
+        System.setProperty("awt.useSystemAAFontSettings", "on");
+        System.setProperty("swing.aatext", "true");
+
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
+        }
+        
         new Main();
     }
 }
