@@ -1,5 +1,6 @@
 # VEXCode Tux
-Free and (mostly) open source build environment for VEX C++
+Free and open-source tools for building and uploading VEXCode V5 Text projects
+<br/><sup><sub>Disclaimer: the VEX C++ SDK is not open-source</sup></sub>
 
 ## Requirements
 * Java 8 or newer
