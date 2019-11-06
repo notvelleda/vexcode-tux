@@ -28,6 +28,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import com.fazecast.jSerialComm.*;
+
 public class Project {
     private String name;
     private String description;
@@ -42,6 +44,8 @@ public class Project {
         this.setSlot(1);
         this.setCompetition(true);
     }
+
+    // Getters & setters for project vars
 
     public void setName(String name) {
         this.name = name;
@@ -91,6 +95,7 @@ public class Project {
         return this.file;
     }
 
+    // Create project from JSON object
     public static Project fromJSON(JSONObject json) {
         Project p = new Project();
         p.setName(json.getString("title"));
@@ -101,6 +106,7 @@ public class Project {
         return p;
     }
 
+    // Create JSON object from project
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("title", this.getName());
@@ -113,6 +119,7 @@ public class Project {
         return json;
     }
 
+    // Convert VEX Coding Studio project file to the VEXCode V5 Text format
     public static Project convertVEXCodingStudioFile(File file) throws java.io.FileNotFoundException, org.apache.commons.compress.archivers.ArchiveException, IOException, Exception {
         final InputStream is = new FileInputStream(file); 
         final TarArchiveInputStream tarInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
@@ -180,18 +187,21 @@ public class Project {
         return project;
     }
 
+    // Load project from file
     public static Project fromFile(File file) throws IOException {
         Project project = Project.fromJSON(new JSONObject(Utils.readFile(file)));
         project.setFile(file);
         return project;
     }
 
+    // Save project to file
     public void save() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(this.getFile()));
         writer.write(this.toJSON().toString());
         writer.close();
     }
 
+    // Save project as
     public void saveAs(File file, boolean createFiles, boolean copyOldFiles) throws Exception, java.io.IOException {
         File dir = file.getParentFile();
         if (createFiles && copyOldFiles) {
@@ -215,6 +225,7 @@ public class Project {
         this.save();
     }
 
+    // Execute & log command then return output & exit code
     private BuildResult buildCmd(String cmd, String type) {
         try {
             String fullCmd = "( " + cmd + " ; echo process exited with code $? ) 2>&1 | tee " + this.getFile().getParentFile() + "/" + type + ".log";
@@ -236,6 +247,7 @@ public class Project {
         }
     }
 
+    // Build project
     public BuildResult build() {
         try {
             String storageDir = Utils.getStorageDirectory().toString();
@@ -248,16 +260,25 @@ public class Project {
         }
     }
 
+    // Upload project to V5 Brain
     public BuildResult upload() {
-        try {
-            Utils.exportResource("/upload.py", Utils.getStorageDirectory().toString());
-            String storageDir = Utils.getStorageDirectory().toString();
-            String projDir = this.getFile().getParentFile().toString();
-            String cmd = "python3 \"" + storageDir + "/upload.py\" \"" + projDir + "/build/" + this.getName() + ".bin\" \"" + this.getName() + "\" \"" + this.getDescription() + "\" " + this.getSlot() + " " + this.getIcon();
-            return buildCmd(cmd, "upload");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new BuildResult(ExceptionUtils.getStackTrace(e), -1);
+        SerialPort port = V5Device.findV5SystemPort();
+        String out = "";
+        if (port == null) {
+            return new BuildResult("No V5 ports found\n", -1);
+        } else {
+            V5Device dev = new V5Device(port);
+            try {
+                dev.openPort();
+                out += "Uploading program...\n";
+                dev.writeProgram(new File(this.getFile().getParentFile().toString() + "/build/" + this.getName() + ".bin"), this.getName(), this.getSlot() - 1, "0.0.0", "USER921x.bmp", this.getDescription(), V5Device.RUN_SCREEN);
+                dev.closePort();
+                return new BuildResult(out + "Successfully uploaded program\n", 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+                dev.closePort();
+                return new BuildResult(out + ExceptionUtils.getStackTrace(e), -1);
+            }
         }
     }
 }

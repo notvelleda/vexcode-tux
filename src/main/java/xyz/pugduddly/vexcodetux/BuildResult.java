@@ -1,5 +1,6 @@
 package xyz.pugduddly.vexcodetux;
 
+// Simple class to contain the result of a build/upload
 public class BuildResult {
     private String log;
     private int exitCode;

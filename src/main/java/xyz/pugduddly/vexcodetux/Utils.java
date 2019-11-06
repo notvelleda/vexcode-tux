@@ -22,9 +22,11 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
+// Random shared functions 'n stuff
 public class Utils {
     private static File storageDir;
     
+    // Copy resource in .jar file to specified folder
     public static String exportResource(String resourceName, String path) throws Exception {
         InputStream stream = null;
         OutputStream resStreamOut = null;
@@ -51,6 +53,7 @@ public class Utils {
         return new File(path + '/' + new File(resourceName).getName()).toString();
     }
 
+    // Get extension of file
     public static String getExtension(File f) {
         String s = f.getName();
         String ext = null;
@@ -62,6 +65,7 @@ public class Utils {
         return ext;
     }
 
+    // Get extension of file
     public static String getExtension(String s) {
         String ext = null;
         int i = s.lastIndexOf('.');
@@ -72,6 +76,7 @@ public class Utils {
         return ext;
     }
 
+    // Get URL as string
     public static String getURL(String url) throws java.net.MalformedURLException, IOException, java.net.ProtocolException {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 
@@ -90,6 +95,7 @@ public class Utils {
         return response.toString();
     }
 
+    // Get & save URL to file
     public static int downloadURL(String url, String save) throws java.net.MalformedURLException, IOException, java.net.ProtocolException {
         BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
         FileOutputStream out = new FileOutputStream(save);
@@ -101,14 +107,17 @@ public class Utils {
         return bytesRead;
     }
 
+    // Read file as string
     public static String readFile(String filePath) throws IOException {
         return new String(Files.readAllBytes(Paths.get(filePath)));
     }
 
+    // Read file as string
     public static String readFile(File file) throws IOException {
         return new String(Files.readAllBytes(Paths.get(file.toString())));
     }
 
+    // Unzip .zip file
     public static void unzip(String fileZip, String destDirStr) throws IOException {
         File destDir = new File(destDirStr);
         byte[] buffer = new byte[1024];
@@ -131,8 +140,8 @@ public class Utils {
         zis.closeEntry();
         zis.close();
     }
-     
-    public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+    
+    private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
         File destFile = new File(destinationDir, zipEntry.getName());
          
         String destDirPath = destinationDir.getCanonicalPath();
@@ -145,6 +154,7 @@ public class Utils {
         return destFile;
     }
 
+    // Return directory for storing... stuff
     public static File getStorageDirectory() {
         if (storageDir == null) {
             String string = "vexcodetux";
@@ -177,6 +187,7 @@ public class Utils {
         return storageDir;
     }
 
+    // Get OS type
     public static String getOSType() {
         String string = System.getProperty("os.name").toLowerCase();
         if (string.contains("win")) {

@@ -38,18 +38,11 @@ import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-//import gnu.io.CommPortIdentifier;
-
+// Main GUI/program
 public class Main extends JFrame implements ActionListener {
     public static final String title = "VEXCode Tux";
     public static final int width = 640;
     public static final int height = 400;
-
-    private static final Color blurple = new Color(0x7289da);
-    private static final Color white = new Color(0xffffff);
-    private static final Color gray = new Color(0x99aab5);
-    private static final Color darkgray = new Color(0x2c2f33);
-    private static final Color darkergray = new Color(0x23272a);
 
     private JTextArea messages;
 
@@ -73,11 +66,13 @@ public class Main extends JFrame implements ActionListener {
     private Project project;
     
     public Main() {
+        // Set up GUI
         JPanel content = new JPanel();
         content.setBounds(0, 0, width, height);
         content.setPreferredSize(new Dimension(width, height));
         content.setLayout(null);
 
+        // Message window
         messages = new JTextArea();
         messages.setFont(new Font("monospaced", Font.PLAIN, 12));
         messages.setEditable(false);
@@ -89,8 +84,10 @@ public class Main extends JFrame implements ActionListener {
 
         content.add(scrollPane);
 
+        // Menu bar
         menuBar = new JMenuBar();
 
+        // File menu
         fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
         newMenuItem = new JMenuItem("New", KeyEvent.VK_N);
@@ -111,6 +108,7 @@ public class Main extends JFrame implements ActionListener {
         fileMenu.add(saveAsMenuItem);
         menuBar.add(fileMenu);
 
+        // Project menu
         projectMenu = new JMenu("Project");
         projectMenu.setMnemonic(KeyEvent.VK_P);
         buildMenuItem = new JMenuItem("Build", KeyEvent.VK_B);
@@ -123,6 +121,7 @@ public class Main extends JFrame implements ActionListener {
         projectMenu.add(uploadMenuItem);
         menuBar.add(projectMenu);
 
+        // Help menu
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
         JMenuItem aboutMenuItem = new JMenuItem("About", KeyEvent.VK_A);
@@ -132,25 +131,30 @@ public class Main extends JFrame implements ActionListener {
 
         this.setJMenuBar(menuBar);
 
+        // Project name text field
         projectName = new JTextField();
         projectName.setBounds(5, 5, width / 3 - 10, 32);
         projectName.setText("Project Name");
         content.add(projectName);
 
+        // Project slot spinner thing
         SpinnerModel slotModel = new SpinnerNumberModel(1, 1, 8, 1);     
         slotSpinner = new JSpinner(slotModel);
         slotSpinner.setBounds(width / 3 + 5, 5, width / 6 - 10, 32);
         content.add(slotSpinner);
 
+        // Project description text field
         projectDesc = new JTextField();
         projectDesc.setBounds(5, 48, width / 2 - 10, 32);
         projectDesc.setText("Project Description");
         content.add(projectDesc);
 
+        // Checkbox to select whether project is competition or not
         isCompetition = new JCheckBox("Competition");
         isCompetition.setBounds(25, 96, 200, 25);
         content.add(isCompetition);
         
+        // Disable all GUI elements
         newMenuItem.setEnabled(false);
         openMenuItem.setEnabled(false);
         saveMenuItem.setEnabled(false);
@@ -162,23 +166,22 @@ public class Main extends JFrame implements ActionListener {
         slotSpinner.setEnabled(false);
         isCompetition.setEnabled(false);
 
+        // Create open file chooser object & populate with filters
         openFileChooser = new JFileChooser();
-
         openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code", "vex" }, "All compatible files"));
         openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code" }, "VEXCode V5 Text files (.v5code)"));
         openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "vex" }, "VEX Coding Studio files (.vex)"));
-
         openFileChooser.setAcceptAllFileFilterUsed(false);
 
+        // Create save file chooser object & populate with filter
         saveFileChooser = new JFileChooser();
-
         saveFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code" }, "VEXCode V5 Text files (.v5code)"));
-
         saveFileChooser.setAcceptAllFileFilterUsed(false);
         
         add(content);
         pack();
 
+        // Stuff
         setTitle(this.title);
         setLocationRelativeTo(null);
         setLayout(null);
@@ -186,22 +189,24 @@ public class Main extends JFrame implements ActionListener {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Check for SDK update then download and install one if available
         messages.append("Checking for SDK update...\n");
         try {
             if (SDK.shouldUpdate()) {
                 messages.append("Updating SDK...\n");
                 SDK.update();
             }
-
             messages.append("Done\n");
-            newMenuItem.setEnabled(true);
-            openMenuItem.setEnabled(true);
         } catch (Exception e) {
             e.printStackTrace();
-            messages.append("Got exception " + e + ", aborting\n");
+            messages.append("Caught exception " + e + ", aborting\n");
+        } finally {
+            newMenuItem.setEnabled(true);
+            openMenuItem.setEnabled(true);
         }
     }
 
+    // Disable GUI elements
     private void disableGUI() {
         saveMenuItem.setEnabled(false);
         saveAsMenuItem.setEnabled(false);
@@ -213,6 +218,7 @@ public class Main extends JFrame implements ActionListener {
         isCompetition.setEnabled(false);
     }
 
+    // Enable GUI elements
     private void enableGUI() {
         saveMenuItem.setEnabled(true);
         saveAsMenuItem.setEnabled(true);
@@ -224,6 +230,7 @@ public class Main extends JFrame implements ActionListener {
         isCompetition.setEnabled(true);
     }
 
+    // Update project with values from GUI
     private void updateProject() {
         this.project.setName(this.projectName.getText());
         this.project.setDescription(this.projectDesc.getText());
@@ -231,6 +238,7 @@ public class Main extends JFrame implements ActionListener {
         this.project.setCompetition(this.isCompetition.isSelected());
     }
 
+    // Update GUI with values from project
     private void updateGUI() {
         this.projectName.setText(this.project.getName());
         this.projectDesc.setText(this.project.getDescription());
@@ -238,11 +246,14 @@ public class Main extends JFrame implements ActionListener {
         this.isCompetition.setSelected(this.project.isCompetition());
     }
 
+    // GUI action handler
     public void actionPerformed(ActionEvent event) {
         if (event.getActionCommand().equals("About")) {
+            // Show about dialog box
             JOptionPane.showMessageDialog(this, title + "\nCopyright (c) 2019 Pugduddly\n\nSDK version " + SDK.getVersion());
         } else if (event.getActionCommand().equals("New")) {
-            enableGUI();
+            // Create a new project
+            this.enableGUI();
             saveMenuItem.setEnabled(false);
             buildMenuItem.setEnabled(false);
             uploadMenuItem.setEnabled(false);
@@ -250,6 +261,7 @@ public class Main extends JFrame implements ActionListener {
             this.project = new Project();
             this.updateGUI();
         } else if (event.getActionCommand().equals("Open")) {
+            // Open project from file
             int returnVal = openFileChooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = openFileChooser.getSelectedFile();
@@ -257,9 +269,11 @@ public class Main extends JFrame implements ActionListener {
 
                 try {
                     if (ext.equals("v5code")) {
+                        // VEXCode V5 Text file
                         this.project = Project.fromFile(file);
                         this.updateGUI();
                     } else if (ext.equals("vex")) {
+                        // VEX Coding Studio file
                         int dialogResult = JOptionPane.showConfirmDialog(this, "This project requires conversion. Would you like to convert it?", title, JOptionPane.YES_NO_OPTION);
                         if (dialogResult == JOptionPane.YES_OPTION) {
                             try {
@@ -276,43 +290,50 @@ public class Main extends JFrame implements ActionListener {
                     e.printStackTrace();
                 }
 
-                enableGUI();
+                this.enableGUI();
 
                 messages.append("Opened project " + project.getName() + " (" + file + ")\n");
             }
         } else if (event.getActionCommand().equals("Build")) {
+            // Build project
             messages.append("Building project " + projectName.getText() + "...\n");
-            disableGUI();
+            this.disableGUI();
             new Thread() {
                 @Override
                 public void run() {
-                    updateProject();
+                    Main.this.updateProject();
                     messages.append(Main.this.project.build().getLog());
                     messages.append("Done\n");
-                    enableGUI();
+                    Main.this.enableGUI();
                 }
             }.start();
         } else if (event.getActionCommand().equals("Upload to Brain")) {
+            // Build project, then upload if build is successful
             messages.append("Building project " + projectName.getText() + "...\n");
-            disableGUI();
+            this.disableGUI();
             new Thread() {
                 @Override
                 public void run() {
-                    updateProject();
+                    Main.this.updateProject();
                     BuildResult result = Main.this.project.build();
                     messages.append(result.getLog());
                     messages.append("Done\n");
                     if (result.getExitCode() == 0) {
                         messages.append("Uploading project " + projectName.getText() + "...\n");
-                        messages.append(Main.this.project.upload().getLog());
+                        BuildResult res = Main.this.project.upload();
+                        messages.append(res.getLog());
                         messages.append("Done\n");
+                        if (res.getExitCode() != 0) {
+                            JOptionPane.showMessageDialog(Main.this, "Upload failed! Make sure you have a V5 Brain plugged in and try again.");
+                        }
                     } else {
                         messages.append("Build failed, so not uploading project.\n");
                     }
-                    enableGUI();
+                    Main.this.enableGUI();
                 }
             }.start();
         } else if (event.getActionCommand().equals("Save")) {
+            // Save project
             try {
                 this.updateProject();
                 this.project.save();
@@ -322,6 +343,7 @@ public class Main extends JFrame implements ActionListener {
                 messages.append("Caught exception " + e + ", aborting\n");
             }
         } else if (event.getActionCommand().equals("Save As")) {
+            // Save project to new location
             this.updateProject();
             int returnVal = saveFileChooser.showSaveDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -368,10 +390,12 @@ public class Main extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
+        // hacky solution to fix antialiasing
         System.setProperty("awt.useSystemAAFontSettings", "on");
         System.setProperty("swing.aatext", "true");
 
         try {
+            // Ensure GTK look and feel is used on Linux systems
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
         } catch (Exception e) {
             e.printStackTrace();
