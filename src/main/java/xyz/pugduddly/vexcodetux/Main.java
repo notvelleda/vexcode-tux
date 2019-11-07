@@ -64,8 +64,12 @@ public class Main extends JFrame implements ActionListener {
     private JFileChooser saveFileChooser;
 
     private Project project;
-    
+
     public Main() {
+        this(null);
+    }
+    
+    public Main(Project project) {
         // Set up GUI
         JPanel content = new JPanel();
         content.setBounds(0, 0, width, height);
@@ -204,6 +208,14 @@ public class Main extends JFrame implements ActionListener {
             newMenuItem.setEnabled(true);
             openMenuItem.setEnabled(true);
         }
+
+        if (project != null) {
+            this.project = project;
+            this.updateGUI();
+            this.enableGUI();
+
+            messages.append("Opened project " + project.getName() + " (" + project.getFile() + ")\n");
+        }
     }
 
     // Disable GUI elements
@@ -250,7 +262,7 @@ public class Main extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if (event.getActionCommand().equals("About")) {
             // Show about dialog box
-            JOptionPane.showMessageDialog(this, title + "\nCopyright (c) 2019 Pugduddly\n\nSDK version " + SDK.getVersion());
+            JOptionPane.showMessageDialog(this, title + "\nCopyleft (ↄ) 2019 Pugduddly\n\nUsing SDK version " + SDK.getVersion());
         } else if (event.getActionCommand().equals("New")) {
             // Create a new project
             this.enableGUI();
@@ -389,24 +401,191 @@ public class Main extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
-        // hacky solution to fix antialiasing
-        System.setProperty("awt.useSystemAAFontSettings", "on");
-        System.setProperty("swing.aatext", "true");
+    private static void help() {
+        System.out.println("Usage: vexcodetux [option]");
+        System.out.println("Long options:");
+        System.out.println("\t--help\t\t\t: help");
+        System.out.println("\t--build\t\t\t: build project");
+        System.out.println("\t--convert <path>\t: convert VEX Coding Studio project");
+        System.out.println("\t--description <desc>\t: set project description");
+        System.out.println("\t--gui\t\t\t: open project in GUI");
+        System.out.println("\t--name <name>\t\t: set project name");
+        System.out.println("\t--project\t\t: specify project file");
+        System.out.println("\t--slot\t\t\t: set project slot");
+        System.out.println("\t--upload\t\t: upload project to Brain");
+        System.out.println("Short options:");
+        System.out.println("\t-bchnpu");
+    }
 
+    public static void main(String[] args) {
         try {
-            // Ensure GTK look and feel is used on Linux systems
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            System.out.println(title + "\nCopyleft (ↄ) 2019 Pugduddly\n\nUsing SDK version " + SDK.getVersion() + "\n");
+
+            // hacky solution to fix antialiasing
+            System.setProperty("awt.useSystemAAFontSettings", "on");
+            System.setProperty("swing.aatext", "true");
+        
+            try {
+                // Ensure GTK look and feel is used on Linux systems
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                }
+            }
+            
+            if (args.length == 0) {
+                new Main();
+            } else {
+                // Got args, it's parsing time
+
+                // Options
+                Project staticProject = null;
+                BuildResult buildResult = null;
+                BuildResult uploadResult = null;
+                boolean foundArgs = false;
+                boolean shouldOpenGUI = false;
+
+                for (int i = 0; i < args.length; i ++) {
+                    if (args[i].startsWith("--")) {
+                        String arg = args[i].substring(2);
+                        if (arg.equals("help")) { // help
+                            help();
+                        } else if (arg.equals("project")) { // set project
+                            staticProject = Project.fromFile(new File(args[++ i]));
+                        } else if (arg.equals("convert")) { // convert
+                            staticProject = Project.convertVEXCodingStudioFile(new File(args[++ i]));
+                        } else if (arg.equals("build")) { // build
+                            if (staticProject == null) {
+                                System.out.println("No project! Specify a project file with -p <projectFile>");
+                            } else {
+                                buildResult = staticProject.build();
+                                System.out.println(buildResult.getLog());
+                            }
+                        } else if (arg.equals("upload")) { // upload
+                            if (staticProject == null) {
+                                System.out.println("No project! Specify a project file with -p <projectFile>");
+                            } else {
+                                if (buildResult == null) {
+                                    buildResult = staticProject.build();
+                                    System.out.println(buildResult.getLog());
+                                }
+                                if (buildResult.getExitCode() == 0) {
+                                    uploadResult = staticProject.upload();
+                                    System.out.println(uploadResult.getLog());
+                                } else {
+                                    System.out.println("Build failed, so not uploading project.");
+                                }
+                            }
+                        } else if (arg.equals("name")) { // name
+                            if (staticProject == null) {
+                                System.out.println("No project! Specify a project file with -p <projectFile>");
+                            } else {
+                                staticProject.setName(args[++ i]);
+                                staticProject.save();
+                            }
+                        } else if (arg.equals("description")) { // description
+                            if (staticProject == null) {
+                                System.out.println("No project! Specify a project file with -p <projectFile>");
+                            } else {
+                                staticProject.setDescription(args[++ i]);
+                                staticProject.save();
+                            }
+                        } else if (arg.equals("slot")) { // slot
+                            if (staticProject == null) {
+                                System.out.println("No project! Specify a project file with -p <projectFile>");
+                            } else {
+                                staticProject.setSlot(Integer.parseInt(args[++ i]));
+                                staticProject.save();
+                            }
+                        } else if (arg.equals("gui")) { // open in gui
+                            shouldOpenGUI = true;
+                        } else {
+                            System.out.println("Unrecognized option " + arg);
+                            return;
+                        }
+                    } else if (args[i].startsWith("-")) {
+                        String _arg = args[i];
+                        for (int j = 1; j < _arg.length(); j ++) {
+                            char arg = _arg.charAt(j);
+                            if (arg == 'h') { // help
+                                help();
+                            } else if (arg == 'p') { // set project
+                                staticProject = Project.fromFile(new File(args[++ i]));
+                            } else if (arg == 'c') { // convert
+                                staticProject = Project.convertVEXCodingStudioFile(new File(args[++ i]));
+                            } else if (arg == 'b') { // build
+                                if (staticProject == null) {
+                                    System.out.println("No project! Specify a project file with -p <projectFile>");
+                                } else {
+                                    buildResult = staticProject.build();
+                                    System.out.println(buildResult.getLog());
+                                }
+                            } else if (arg == 'u') { // upload
+                                if (staticProject == null) {
+                                    System.out.println("No project! Specify a project file with -p <projectFile>");
+                                } else {
+                                    if (buildResult == null) {
+                                        buildResult = staticProject.build();
+                                        System.out.println(buildResult.getLog());
+                                    }
+                                    if (buildResult.getExitCode() == 0) {
+                                        uploadResult = staticProject.upload();
+                                        System.out.println(uploadResult.getLog());
+                                    } else {
+                                        System.out.println("Build failed, so not uploading project.");
+                                    }
+                                }
+                            } else if (arg == 'n') { // name
+                                if (staticProject == null) {
+                                    System.out.println("No project! Specify a project file with -p <projectFile>");
+                                } else {
+                                    staticProject.setName(args[++ i]);
+                                    staticProject.save();
+                                }
+                            } else if (arg == 'd') { // description
+                                if (staticProject == null) {
+                                    System.out.println("No project! Specify a project file with -p <projectFile>");
+                                } else {
+                                    staticProject.setDescription(args[++ i]);
+                                    staticProject.save();
+                                }
+                            } else if (arg == 's') { // slot
+                                if (staticProject == null) {
+                                    System.out.println("No project! Specify a project file with -p <projectFile>");
+                                } else {
+                                    staticProject.setSlot(Integer.parseInt(args[++ i]));
+                                    staticProject.save();
+                                }
+                            } else if (arg == 'g') { // open in gui
+                                shouldOpenGUI = true;
+                            } else {
+                                System.out.println("Unrecognized option " + arg);
+                                return;
+                            }
+                        }
+                    } else {
+                        System.out.println("Unrecognized option " + args[i]);
+                        return;
+                    }
+                }
+
+                if (shouldOpenGUI) {
+                    new Main(staticProject);
+                }
+
+                if (uploadResult != null) {
+                    System.exit(uploadResult.getExitCode());
+                } else if (buildResult != null) {
+                    System.exit(buildResult.getExitCode());
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception ee) {
-                ee.printStackTrace();
-            }
         }
-
-        new Main();
     }
 }
 

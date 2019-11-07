@@ -265,7 +265,7 @@ public class Project {
         SerialPort port = V5Device.findV5SystemPort();
         String out = "";
         if (port == null) {
-            return new BuildResult("No V5 ports found\n", -1);
+            return new BuildResult("Error: No V5 ports found\n", -1);
         } else {
             V5Device dev = new V5Device(port);
             try {

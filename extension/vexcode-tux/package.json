@@ -1,0 +1,57 @@
+{
+	"name": "vexcode-tux",
+	"displayName": "VEXCode Tux",
+	"description": "Free and open-source tools for building and uploading VEXCode V5 Text projects",
+	"version": "0.0.1",
+	"publisher": "Pugduddly",
+	"repository": "https://github.com/Pugduddly/vexcode-tux",
+	"icon": "logo.png",
+	"license": "GPL-3.0",
+	"engines": {
+		"vscode": "^1.39.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:vexcode-tux.buildProject",
+		"onCommand:vexcode-tux.uploadProject",
+		"onCommand:vexcode-tux.openProjectGUI",
+		"onCommand:vexcode-tux.openGUI"
+	],
+	"main": "./vexcode-tux.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "vexcode-tux.buildProject",
+				"title": "VEXCode Tux: Build Project"
+			},
+			{
+				"command": "vexcode-tux.uploadProject",
+				"title": "VEXCode Tux: Upload Project"
+			},
+			{
+				"command": "vexcode-tux.openProjectGUI",
+				"title": "VEXCode Tux: Open project in VEXCode Tux"
+			},
+			{
+				"command": "vexcode-tux.openGUI",
+				"title": "VEXCode Tux: Open VEXCode Tux GUI"
+			}
+		]
+	},
+	"scripts": {
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.39.0",
+		"eslint": "^6.6.0",
+		"glob": "^7.1.5",
+		"mocha": "^6.2.2",
+		"typescript": "^3.6.4",
+		"vscode-test": "^1.2.2"
+	}
+}
