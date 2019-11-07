@@ -5,5 +5,5 @@ Free and open-source tools for building and uploading VEXCode V5 Text projects
 ## Requirements
 * Java 8 or newer
 * GNU Make
-* Equivalent of AUR package `gcc-arm-none-eabi-bin`
-* Linux (or something that provides BASH if you're not using Linux)
+* BASH
+* Equivalent of AUR package `gcc-arm-none-eabi-bin` (This is included in the SDK if running Windows)
