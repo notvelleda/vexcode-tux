@@ -40,7 +40,7 @@ import org.apache.commons.io.IOUtils;
 
 // Main GUI/program
 public class Main extends JFrame implements ActionListener {
-    public static final String title = "VEXCode Tux";
+    public static final String title = "VEXcode Tux";
     public static final int width = 640;
     public static final int height = 400;
 
@@ -173,13 +173,13 @@ public class Main extends JFrame implements ActionListener {
         // Create open file chooser object & populate with filters
         openFileChooser = new JFileChooser();
         openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code", "vex" }, "All compatible files"));
-        openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code" }, "VEXCode V5 Text files (.v5code)"));
+        openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code" }, "VEXcode V5 Text files (.v5code)"));
         openFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "vex" }, "VEX Coding Studio files (.vex)"));
         openFileChooser.setAcceptAllFileFilterUsed(false);
 
         // Create save file chooser object & populate with filter
         saveFileChooser = new JFileChooser();
-        saveFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code" }, "VEXCode V5 Text files (.v5code)"));
+        saveFileChooser.addChoosableFileFilter(new CustomFileFilter(new String[] { "v5code" }, "VEXcode V5 Text files (.v5code)"));
         saveFileChooser.setAcceptAllFileFilterUsed(false);
         
         add(content);
@@ -281,7 +281,7 @@ public class Main extends JFrame implements ActionListener {
 
                 try {
                     if (ext.equals("v5code")) {
-                        // VEXCode V5 Text file
+                        // VEXcode V5 Text file
                         this.project = Project.fromFile(file);
                         this.updateGUI();
                     } else if (ext.equals("vex")) {
@@ -419,7 +419,8 @@ public class Main extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         try {
-            System.out.println(title + "\nCopyleft (ↄ) 2019 Pugduddly\n\nUsing SDK version " + SDK.getVersion() + "\n");
+            System.out.println(title + "\nCopyleft (ↄ) 2019 Pugduddly\n");
+            System.out.println("Using SDK version " + SDK.getVersion() + "\n");
 
             // hacky solution to fix antialiasing
             System.setProperty("awt.useSystemAAFontSettings", "on");

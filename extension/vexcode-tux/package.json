@@ -1,8 +1,8 @@
 {
 	"name": "vexcode-tux",
-	"displayName": "VEXCode Tux",
-	"description": "Free and open-source tools for building and uploading VEXCode V5 Text projects",
-	"version": "0.0.1",
+	"displayName": "VEXcode Tux",
+	"description": "Free and open-source tools for building and uploading VEXcode V5 Text projects",
+	"version": "0.1.4",
 	"publisher": "Pugduddly",
 	"repository": "https://github.com/Pugduddly/vexcode-tux",
 	"icon": "logo.png",
@@ -21,19 +21,19 @@
 		"commands": [
 			{
 				"command": "vexcode-tux.buildProject",
-				"title": "VEXCode Tux: Build Project"
+				"title": "VEXcode Tux: Build Project"
 			},
 			{
 				"command": "vexcode-tux.uploadProject",
-				"title": "VEXCode Tux: Upload Project"
+				"title": "VEXcode Tux: Upload Project"
 			},
 			{
 				"command": "vexcode-tux.openProjectGUI",
-				"title": "VEXCode Tux: Open project in VEXCode Tux"
+				"title": "VEXcode Tux: Open project in VEXcode Tux"
 			},
 			{
 				"command": "vexcode-tux.openGUI",
-				"title": "VEXCode Tux: Open VEXCode Tux GUI"
+				"title": "VEXcode Tux: Open VEXcode Tux GUI"
 			}
 		]
 	},

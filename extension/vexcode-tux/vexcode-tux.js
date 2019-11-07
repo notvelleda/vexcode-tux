@@ -43,14 +43,14 @@ function findJarFile() {
 }
 
 function errorMissingJAR(channel) {
-	vscode.window.showErrorMessage('Could not find the VEXCode Tux JAR file!');
-	channel.appendLine('Could not find the VEXCode Tux JAR file!');
+	vscode.window.showErrorMessage('Could not find the VEXcode Tux JAR file!');
+	channel.appendLine('Could not find the VEXcode Tux JAR file!');
 	channel.appendLine('Expected file to be ' + findStorageDir() + '/vexcodetux.jar');
 }
 
 function errorMissingProject(channel) {
 	vscode.window.showErrorMessage('Could not find a compatible project file!');
-	channel.appendLine('Could not find a VEXCode V5 Text-compatible project file!');
+	channel.appendLine('Could not find a VEXcode V5 Text-compatible project file!');
 	channel.appendLine('Make sure you have a folder open containing the project file (.v5code) and try again.');
 }
 
@@ -58,10 +58,10 @@ function errorMissingProject(channel) {
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	let channel = vscode.window.createOutputChannel("VEXCode Tux Build Result");
+	let channel = vscode.window.createOutputChannel("VEXcode Tux Build Result");
 
-	// Check for updates to VEXCode Tux
-	vscode.window.showInformationMessage('Checking for VEXCode Tux updates...');
+	// Check for updates to VEXcode Tux
+	vscode.window.showInformationMessage('Checking for VEXcode Tux updates...');
 	request({
 		url: 'https://api.github.com/repos/Pugduddly/vexcode-tux/releases',
 		method: 'GET',
@@ -88,7 +88,7 @@ function activate(context) {
 			shouldUpdate = version !== fs.readFileSync(findStorageDir() + '/jarVersion.txt', 'utf8');
 		}
 		if (shouldUpdate) {
-			vscode.window.showInformationMessage('Updating VEXCode Tux to version ' + version + '...');
+			vscode.window.showInformationMessage('Updating VEXcode Tux to version ' + version + '...');
 
 			request({
 				url: jarFile,
@@ -98,7 +98,7 @@ function activate(context) {
 					'Accepts': 'application/octet-stream'
 				}
 			}).on('response', (response) => {
-				vscode.window.showInformationMessage('Done updating VEXCode Tux');
+				vscode.window.showInformationMessage('Done updating VEXcode Tux');
 			}).on('error', (err) => {
 				vscode.window.showErrorMessage('Error while downloading updates: ' + err);
 			}).pipe(fs.createWriteStream(findStorageDir() + '/vexcodetux.jar'));

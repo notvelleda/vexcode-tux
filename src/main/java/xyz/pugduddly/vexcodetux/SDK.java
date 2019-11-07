@@ -1,6 +1,7 @@
 package xyz.pugduddly.vexcodetux;
 
 import java.io.File;
+import java.nio.file.NoSuchFileException;
 
 // Handles all SDK-related tasks
 public class SDK {
@@ -33,7 +34,18 @@ public class SDK {
     public static String getVersion() {
         try {
             return Utils.readFile(Utils.getStorageDirectory().toString() + "/version.txt");
+        } catch (NoSuchFileException e) {
+            try {
+                System.out.println("SDK not installed. Downloading SDK...");
+                update();
+                System.out.println("Done");
+                return getVersion();
+            } catch (Exception e2) {
+                e2.printStackTrace();
+                return "";
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             return "";
         }
     }

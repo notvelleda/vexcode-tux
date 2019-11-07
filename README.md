@@ -1,6 +1,6 @@
-![VEXCode Tux logo](https://github.com/Pugduddly/vexcode-tux/blob/master/logosmall.png?raw=true)
-# VEXCode Tux
-Free and open-source tools for building and uploading VEXCode V5 Text projects
+![VEXcode Tux logo](https://github.com/Pugduddly/vexcode-tux/blob/master/logosmall.png?raw=true)
+# VEXcode Tux
+Free and open-source tools for building and uploading VEXcode V5 Text projects
 <br/><sup><sub>Disclaimer: the VEX C++ SDK is not open-source</sup></sub>
 
 ## Requirements
@@ -9,3 +9,4 @@ Free and open-source tools for building and uploading VEXCode V5 Text projects
 * BASH
 * Equivalent of AUR package `gcc-arm-none-eabi-bin`
 * Maven (if building)
+* Visual Studio Code extension tools (if building extension)
