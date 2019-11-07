@@ -2,6 +2,7 @@ const vscode = require('vscode');
 const fs = require('fs');
 const os = require('os');
 const child_process = require('child_process');
+const request = require('request');
 
 function findProjectFile() {
 	if (vscode.workspace.workspaceFolders === undefined) return undefined;
@@ -59,6 +60,57 @@ function errorMissingProject(channel) {
 function activate(context) {
 	let channel = vscode.window.createOutputChannel("VEXCode Tux Build Result");
 
+	// Check for updates to VEXCode Tux
+	vscode.window.showInformationMessage('Checking for VEXCode Tux updates...');
+	request({
+		url: 'https://api.github.com/repos/Pugduddly/vexcode-tux/releases',
+		method: 'GET',
+		headers: {
+			'User-Agent': 'NodeJS'
+		}
+	}, (err, response, body) => {
+		if (err) {
+			vscode.window.showErrorMessage('Error while downloading updates: ' + err);
+			return;
+		}
+
+		let releases = JSON.parse(body);
+		releases.sort((a, b) => Date.parse(a.published_at) < Date.parse(b.published_at)); // Sort releases by publish date
+		let latestRelease = releases[0]; // Latest release
+		let version = latestRelease.tag_name;
+		let jarFile = undefined;
+		for (let i = 0; i < latestRelease.assets.length; i ++) {
+			if (latestRelease.assets[i].name === 'vexcodetux.jar')
+				jarFile = latestRelease.assets[i].browser_download_url;
+		}
+		let shouldUpdate = true;
+		if (fs.existsSync(findStorageDir() + '/jarVersion.txt')) {
+			shouldUpdate = version !== fs.readFileSync(findStorageDir() + '/jarVersion.txt', 'utf8');
+		}
+		if (shouldUpdate) {
+			vscode.window.showInformationMessage('Updating VEXCode Tux to version ' + version + '...');
+
+			request({
+				url: jarFile,
+				method: 'GET',
+				headers: {
+					'User-Agent': 'NodeJS',
+					'Accepts': 'application/octet-stream'
+				}
+			}).on('response', (response) => {
+				vscode.window.showInformationMessage('Done updating VEXCode Tux');
+			}).on('error', (err) => {
+				vscode.window.showErrorMessage('Error while downloading updates: ' + err);
+			}).pipe(fs.createWriteStream(findStorageDir() + '/vexcodetux.jar'));
+
+			fs.writeFile(findStorageDir() + '/jarVersion.txt', version, (err) => {
+				if (err) vscode.window.showErrorMessage('Error while downloading updates: ' + err);
+			});
+		} else {
+			vscode.window.showInformationMessage('No updates found');
+		}
+	});
+
 	let buildProject = vscode.commands.registerCommand('vexcode-tux.buildProject', function () {
 		let projectFile = findProjectFile();
 		let jarLocation = findJarFile();
@@ -87,6 +139,7 @@ function activate(context) {
 					vscode.window.showInformationMessage('Successfully built project.');
 				} else {
 					vscode.window.showErrorMessage('Build failed! See output for details.');
+					channel.show();
 				}
 			});
 		}
@@ -120,6 +173,7 @@ function activate(context) {
 					vscode.window.showInformationMessage('Successfully uploaded project.');
 				} else {
 					vscode.window.showErrorMessage('Upload failed! See output for details.');
+					channel.show();
 				}
 			});
 		}

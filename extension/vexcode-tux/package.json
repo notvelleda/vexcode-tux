@@ -14,10 +14,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vexcode-tux.buildProject",
-		"onCommand:vexcode-tux.uploadProject",
-		"onCommand:vexcode-tux.openProjectGUI",
-		"onCommand:vexcode-tux.openGUI"
+		"*"
 	],
 	"main": "./vexcode-tux.js",
 	"contributes": {
@@ -53,5 +50,8 @@
 		"mocha": "^6.2.2",
 		"typescript": "^3.6.4",
 		"vscode-test": "^1.2.2"
+	},
+	"dependencies": {
+		"request": "^2.88.0"
 	}
 }
