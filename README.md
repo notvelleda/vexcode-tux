@@ -3,6 +3,8 @@
 Free and open-source tools for building and uploading VEXcode V5 Text projects
 <br/><sup><sub>Disclaimer: the VEX C++ SDK is not open-source</sup></sub>
 
+[VS Code extension](https://marketplace.visualstudio.com/items?itemName=pugduddly.vexcode-tux&ssr=false#overview)
+
 ## Requirements
 * Java 8 or newer
 * GNU Make
